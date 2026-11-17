@@ -597,7 +597,7 @@
     var mq=window.matchMedia;
     if(!(mq&&(mq('(hover: none)').matches||mq('(pointer: coarse)').matches))) return;
     if(!('IntersectionObserver' in window)) return;
-    var DWELL=500, MIN_RATIO=0.7, timer=null, lastPanel=null, lastLeft=true, started=false;
+    var DWELL=250, MIN_RATIO=0.7, timer=null, lastPanel=null, lastLeft=true, started=false;
     var panels=[].slice.call(document.querySelectorAll('.has-reveal'));
     var ratio=new Map();
     function moved(){

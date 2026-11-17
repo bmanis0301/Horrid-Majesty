@@ -134,15 +134,16 @@
     padding:0 var(--pad);
     display:grid; grid-template-columns:repeat(4,1fr); gap:var(--gap);
   }
-  .product a{display:block}
   .product .frame{
     position:relative; overflow:hidden;
     aspect-ratio:430/658; background:var(--white);
     border-bottom:1px solid var(--black);
   }
   .product .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
-  .product a:hover .frame img{transform:scale(1.03)}
-  .product .name{font-size:max(15px, calc(18 * var(--u)));margin-top:calc(7 * var(--u))}
+  .product .frame:hover img{transform:scale(1.03)}
+  .product .name{display:block;width:fit-content;font-size:max(15px, calc(18 * var(--u)));margin-top:calc(7 * var(--u));
+    text-decoration:underline;text-decoration-color:transparent;text-underline-offset:.2em;text-decoration-thickness:1px;transition:text-decoration-color .2s}
+  .product .name:hover,.product .name:focus-visible{text-decoration-color:currentColor}
   .product .desc{font-size:max(13px, calc(16 * var(--u)));max-width:calc(343 * var(--u));margin-top:calc(7 * var(--u));line-height:normal}
   .product .price{font-size:max(13px, calc(16 * var(--u)));margin-top:calc(7 * var(--u))}
   .products + .after{height:var(--section)}
@@ -173,9 +174,12 @@
   }
   .service{display:block;aspect-ratio:577.667/658}
   .service:hover img{transform:scale(1.03)}
+  .service .title:hover,.service .title:focus-visible{opacity:.75}
+  .has-reveal{cursor:default}
   .service .shade{height:32.83%}
   .service .panel-copy{top:85.87%}
   .service .title{
+    display:inline-block; transition:opacity .2s;
     font-size:max(18px, calc(28 * var(--u))); letter-spacing:.06em;
     text-decoration:underline; text-underline-offset:.15em; text-decoration-thickness:1px;
   }
@@ -289,6 +293,10 @@
     .products{gap:12px;row-gap:32px}
   }
 
+  @media (hover:none){
+    .product .frame:hover img,.service:hover img{transform:none}
+  }
+
   @media (prefers-reduced-motion:reduce){
     *{transition:none !important}
     /* no flash: skip the negative, ease the decay in and out */
@@ -353,46 +361,46 @@
   <section id="new-arrivals" aria-labelledby="na-title">
     <h2 class="section-title" id="na-title">New arrivals</h2>
     <ul class="products">
-      <li class="product"><a href="#">
+      <li class="product">
         <div class="frame has-reveal">
           <img src="assets/na-jacket.jpg" alt="Black pinstripe jacket with gold piping and a standing collar">
           <img class="reveal reveal-negative" src="assets/na-jacket-negative.jpg" alt="" aria-hidden="true">
           <img class="reveal reveal-decayed" src="assets/na-jacket-decayed.jpg" alt="" aria-hidden="true">
         </div>
-        <p class="name">Company Jacket</p>
+        <a class="name" href="#">Company Jacket</a>
         <p class="desc">Black wool pinstripe, piped in gold, with a standing collar. Cut to hold you close.</p>
         <p class="price">$4,850</p>
-      </a></li>
-      <li class="product"><a href="#">
+      </li>
+      <li class="product">
         <div class="frame has-reveal">
           <img src="assets/na-loafer.jpg" alt="Ivory calfskin loafer with a gilded buckle and stacked heel">
           <img class="reveal reveal-negative" src="assets/na-loafer-negative.jpg" alt="" aria-hidden="true">
           <img class="reveal reveal-decayed" src="assets/na-loafer-decayed.jpg" alt="" aria-hidden="true">
         </div>
-        <p class="name">Heir Loafer</p>
+        <a class="name" href="#">Heir Loafer</a>
         <p class="desc">Ivory calfskin, gilded buckle, stacked heel. Comfortable on any ground you inherit.</p>
         <p class="price">$1,480</p>
-      </a></li>
-      <li class="product"><a href="#">
+      </li>
+      <li class="product">
         <div class="frame has-reveal">
           <img src="assets/na-cape.jpg" alt="Crimson velvet cape lined with spotted ermine">
           <img class="reveal reveal-negative" src="assets/na-cape-negative.jpg" alt="" aria-hidden="true">
           <img class="reveal reveal-decayed" src="assets/na-cape-decayed.jpg" alt="" aria-hidden="true">
         </div>
-        <p class="name">Sovereign Cape</p>
+        <a class="name" href="#">Sovereign Cape</a>
         <p class="desc">Crimson silk velvet over hand-spotted ermine. For those who have never been told no.</p>
         <p class="price">$18,900</p>
-      </a></li>
-      <li class="product"><a href="#">
+      </li>
+      <li class="product">
         <div class="frame has-reveal">
           <img src="assets/na-cravat.jpg" alt="Sapphire satin cravat with lace and a jewelled pin">
           <img class="reveal reveal-negative" src="assets/na-cravat-negative.jpg" alt="" aria-hidden="true">
           <img class="reveal reveal-decayed" src="assets/na-cravat-decayed.jpg" alt="" aria-hidden="true">
         </div>
-        <p class="name">Patron Cravat</p>
+        <a class="name" href="#">Patron Cravat</a>
         <p class="desc">Sapphire silk satin, Calais lace and a jewelled pin at the throat. Wear it snug.</p>
         <p class="price">$780</p>
-      </a></li>
+      </li>
     </ul>
     <div class="after"></div>
   </section>
@@ -411,105 +419,105 @@
   <section id="jewelry" aria-labelledby="jw-title">
     <h2 class="section-title" id="jw-title">Jewelry</h2>
     <ul class="products">
-      <li class="product"><a href="#">
+      <li class="product">
         <div class="frame has-reveal">
           <img src="assets/jw-collar.jpg" alt="Gold collar necklace set with rubies and diamonds">
           <img class="reveal reveal-negative" src="assets/jw-collar-negative.jpg" alt="" aria-hidden="true">
           <img class="reveal reveal-decayed" src="assets/jw-collar-decayed.jpg" alt="" aria-hidden="true">
         </div>
-        <p class="name">Tribute Collar</p>
+        <a class="name" href="#">Tribute Collar</a>
         <p class="desc">Molten 18k gold set with pigeon’s blood rubies and diamonds. It rests at the throat and stays.</p>
         <p class="price">$68,500</p>
-      </a></li>
-      <li class="product"><a href="#">
+      </li>
+      <li class="product">
         <div class="frame has-reveal">
           <img src="assets/jw-cufflinks.jpg" alt="Ruby cufflinks framed in diamonds and gold">
           <img class="reveal reveal-negative" src="assets/jw-cufflinks-negative.jpg" alt="" aria-hidden="true">
           <img class="reveal reveal-decayed" src="assets/jw-cufflinks-decayed.jpg" alt="" aria-hidden="true">
         </div>
-        <p class="name">Ledger Cufflinks</p>
+        <a class="name" href="#">Ledger Cufflinks</a>
         <p class="desc">Cushion-cut rubies framed in diamonds and 18k gold. Made for signing.</p>
         <p class="price">$7,400</p>
-      </a></li>
-      <li class="product"><a href="#">
+      </li>
+      <li class="product">
         <div class="frame has-reveal">
           <img src="assets/jw-cuff.jpg" alt="Pierced gold cuff set with rubies and diamonds">
           <img class="reveal reveal-negative" src="assets/jw-cuff-negative.jpg" alt="" aria-hidden="true">
           <img class="reveal reveal-decayed" src="assets/jw-cuff-decayed.jpg" alt="" aria-hidden="true">
         </div>
-        <p class="name">Covenant Cuff</p>
+        <a class="name" href="#">Covenant Cuff</a>
         <p class="desc">Pierced 18k gold set with rubies and diamonds. Once it’s on, it rarely comes off.</p>
         <p class="price">$11,800</p>
-      </a></li>
-      <li class="product"><a href="#">
+      </li>
+      <li class="product">
         <div class="frame has-reveal">
           <img src="assets/jw-earrings.jpg" alt="Gold drop earring with three rubies">
           <img class="reveal reveal-negative" src="assets/jw-earrings-negative.jpg" alt="" aria-hidden="true">
           <img class="reveal reveal-decayed" src="assets/jw-earrings-decayed.jpg" alt="" aria-hidden="true">
         </div>
-        <p class="name">Reliquary Drops Earrings</p>
+        <a class="name" href="#">Reliquary Drops Earrings</a>
         <p class="desc">Three rubies descend through pierced 18k gold. Sold as a pair.</p>
         <p class="price">$9,600</p>
-      </a></li>
+      </li>
     </ul>
   </section>
 
   <section class="collections" id="collections" aria-label="Collections">
-    <a class="panel collection has-reveal" href="#">
+    <div class="panel collection has-reveal">
       <img src="assets/fw26.jpg" alt="A pale-haired man in a crimson ermine cape and ivory coat before a snowbound gothic palace">
       <img class="reveal reveal-negative" src="assets/fw26-negative.jpg" alt="" aria-hidden="true">
       <img class="reveal reveal-decayed" src="assets/fw26-decayed.jpg" alt="" aria-hidden="true">
       <div class="shade"></div>
       <div class="panel-copy">
         <p class="display">fall/winter 26</p>
-        <span class="cta">Shop now</span>
+        <a class="cta" href="#">Shop now</a>
       </div>
-    </a>
-    <a class="panel collection has-reveal" href="#">
+    </div>
+    <div class="panel collection has-reveal">
       <img src="assets/ss27.jpg" alt="A woman in an embroidered cobalt gown on a stone balustrade at sunset">
       <img class="reveal reveal-negative" src="assets/ss27-negative.jpg" alt="" aria-hidden="true">
       <img class="reveal reveal-decayed" src="assets/ss27-decayed.jpg" alt="" aria-hidden="true">
       <div class="shade"></div>
       <div class="panel-copy">
         <p class="display">spring/summer 27</p>
-        <span class="cta">Shop now</span>
+        <a class="cta" href="#">Shop now</a>
       </div>
-    </a>
+    </div>
   </section>
 
   <section id="services" aria-labelledby="svc-title">
     <h2 class="section-title" id="svc-title">Exclusive services</h2>
     <ul class="services">
-      <li><a class="panel service has-reveal" href="#">
+      <li><div class="panel service has-reveal">
         <img src="assets/svc-store.jpg" alt="An opulent boutique salon with gilded mirrors and a chandelier">
         <img class="reveal reveal-negative" src="assets/svc-store-negative.jpg" alt="" aria-hidden="true">
         <img class="reveal reveal-decayed" src="assets/svc-store-decayed.jpg" alt="" aria-hidden="true">
         <div class="shade"></div>
         <div class="panel-copy">
-          <p class="title">Store locator</p>
+          <a class="title" href="#">Store locator</a>
           <p class="sub">come find us, we’ve already found you</p>
         </div>
-      </a></li>
-      <li><a class="panel service has-reveal" href="#">
+      </div></li>
+      <li><div class="panel service has-reveal">
         <img src="assets/svc-tailoring.jpg" alt="A tailor fitting an embroidered navy gown in an atelier">
         <img class="reveal reveal-negative" src="assets/svc-tailoring-negative.jpg" alt="" aria-hidden="true">
         <img class="reveal reveal-decayed" src="assets/svc-tailoring-decayed.jpg" alt="" aria-hidden="true">
         <div class="shade"></div>
         <div class="panel-copy">
-          <p class="title">Tailoring</p>
+          <a class="title" href="#">Tailoring</a>
           <p class="sub">it’ll fit you better than your own skin</p>
         </div>
-      </a></li>
-      <li><a class="panel service has-reveal" href="#">
+      </div></li>
+      <li><div class="panel service has-reveal">
         <img src="assets/svc-appointment.jpg" alt="A tailor with a notebook beside a client in a crimson and gold gown in a fitting salon">
         <img class="reveal reveal-negative" src="assets/svc-appointment-negative.jpg" alt="" aria-hidden="true">
         <img class="reveal reveal-decayed" src="assets/svc-appointment-decayed.jpg" alt="" aria-hidden="true">
         <div class="shade"></div>
         <div class="panel-copy">
-          <p class="title">Request an appointment</p>
+          <a class="title" href="#">Request an appointment</a>
           <p class="sub">while you still can</p>
         </div>
-      </a></li>
+      </div></li>
     </ul>
   </section>
 </main>
@@ -544,7 +552,8 @@
   // once that panel's reveal images have loaded. A flash that's already running isn't restarted,
   // and a new one waits 1/3s after the last finished, so it can't strobe faster than
   // the 3-flashes-a-second photosensitivity limit.
-  // With a mouse, the decayed image stays until the mouse moves (or the wheel turns) again.
+  // The decayed image then stays until the mouse moves, the wheel turns, the page scrolls,
+  // or (on touch screens) the next tap. Tapping a picture never follows a link: only the text links do.
   var reducedMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.querySelectorAll('.has-reveal').forEach(function(panel){
     var layers=panel.querySelectorAll('.reveal');
@@ -565,8 +574,14 @@
     function release(){ if(armed) finish(); }
     document.addEventListener('mousemove',release,{passive:true});
     document.addEventListener('wheel',release,{passive:true});
+    window.addEventListener('scroll',release,{passive:true});
+    document.addEventListener('touchstart',release,{passive:true});
     panel.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse'||e.pointerType==='pen')play(true);});
-    panel.addEventListener('click',function(e){if(!e.target.closest('a'))play(false);});
+    panel.addEventListener('click',function(e){
+      if(e.target.closest('a')) return;
+      if(armed){ finish(); return; }
+      play(true);
+    });
   });
 
   (function(){

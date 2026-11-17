@@ -552,6 +552,7 @@
   // once that panel's reveal images have loaded. A flash that's already running isn't restarted,
   // and a new one waits 1/3s after the last finished, so it can't strobe faster than
   // the 3-flashes-a-second photosensitivity limit.
+  // On phones it also plays when scrolling stops on a picture (see below).
   // The decayed image then stays until the mouse moves, the wheel turns, the page scrolls,
   // or (on touch screens) the next tap. Tapping a picture never follows a link: only the text links do.
   var reducedMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -561,10 +562,11 @@
     var GAP=333, lastEnd=-Infinity, playing=false, holding=false, armed=false;
     function ready(){return Array.prototype.every.call(layers,function(i){return i.complete&&i.naturalWidth>0;});}
     function play(hold){
-      if(playing||performance.now()-lastEnd<GAP||!ready()) return;
+      if(playing||performance.now()-lastEnd<GAP||!ready()) return false;
       playing=true; holding=hold&&!reducedMotion; armed=false;
       panel.classList.remove('is-revealing','is-holding'); void panel.offsetWidth;
       panel.classList.add('is-revealing'); if(holding) panel.classList.add('is-holding');
+      return true;
     }
     function finish(){
       panel.classList.remove('is-revealing','is-holding');
@@ -572,17 +574,60 @@
     }
     decayed.addEventListener('animationend',function(){ if(holding) armed=true; else finish(); });
     function release(){ if(armed) finish(); }
+    // scrolling or touching mid-flash cancels the hold, so the picture never stays decayed off-screen
+    function releaseHard(){ if(armed) finish(); else if(playing) holding=false; }
     document.addEventListener('mousemove',release,{passive:true});
-    document.addEventListener('wheel',release,{passive:true});
-    window.addEventListener('scroll',release,{passive:true});
-    document.addEventListener('touchstart',release,{passive:true});
+    document.addEventListener('wheel',releaseHard,{passive:true});
+    window.addEventListener('scroll',releaseHard,{passive:true});
+    document.addEventListener('touchstart',releaseHard,{passive:true});
     panel.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse'||e.pointerType==='pen')play(true);});
     panel.addEventListener('click',function(e){
       if(e.target.closest('a')) return;
       if(armed){ finish(); return; }
       play(true);
     });
+    panel._reveal={play:play,releaseHard:releaseHard,isActive:function(){return playing;}};
   });
+
+  // Phones and tablets: when scrolling stops and a picture fills most of the screen for about a
+  // second, it plays and holds until the next scroll or tap. Uses IntersectionObserver so it also
+  // works when the page is shown inside a frame that scrolls its parent (e.g. a preview on claude.ai).
+  // Only one picture plays at a time, and a picture won't replay until it has mostly left the screen.
+  (function(){
+    var mq=window.matchMedia;
+    if(!(mq&&(mq('(hover: none)').matches||mq('(pointer: coarse)').matches))) return;
+    if(!('IntersectionObserver' in window)) return;
+    var DWELL=1000, MIN_RATIO=0.7, timer=null, lastPanel=null, lastLeft=true, started=false;
+    var panels=[].slice.call(document.querySelectorAll('.has-reveal'));
+    var ratio=new Map();
+    function moved(){
+      panels.forEach(function(el){ el._reveal.releaseHard(); });
+      clearTimeout(timer); timer=setTimeout(settle,DWELL);
+    }
+    function settle(){
+      timer=null;
+      if(panels.some(function(el){return el._reveal.isActive();})) return;
+      var best=null, bestR=0, bestLeft=0;
+      panels.forEach(function(el){
+        var r=ratio.get(el)||0;
+        if(r<MIN_RATIO) return;
+        if(el===lastPanel&&!lastLeft) return;
+        var left=el.getBoundingClientRect().left;
+        if(!best||r>bestR+0.02||(Math.abs(r-bestR)<=0.02&&left<bestLeft)){best=el;bestR=r;bestLeft=left;}
+      });
+      if(best&&best._reveal.play(true)){ lastPanel=best; lastLeft=false; }
+    }
+    var th=[]; for(var k=0;k<=20;k++) th.push(k/20);
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        ratio.set(e.target,e.intersectionRatio);
+        if(e.target===lastPanel&&e.intersectionRatio<0.3) lastLeft=true;
+      });
+      if(started) moved(); else started=true;   // the first report is the page loading, not a scroll
+    },{threshold:th});
+    panels.forEach(function(el){ io.observe(el); });
+    window.addEventListener('scroll',moved,{passive:true});
+  })();
 
   (function(){
     var header=document.querySelector('.site-header');

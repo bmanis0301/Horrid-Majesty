@@ -589,15 +589,15 @@
     panel._reveal={play:play,releaseHard:releaseHard,isActive:function(){return playing;}};
   });
 
-  // Phones and tablets: when scrolling stops and a picture fills most of the screen for about a
-  // second, it plays and holds until the next scroll or tap. Uses IntersectionObserver so it also
+  // Phones and tablets: when scrolling stops and a picture fills most of the screen for half a
+  // second (DWELL), it plays and holds until the next scroll or tap. Uses IntersectionObserver so it also
   // works when the page is shown inside a frame that scrolls its parent (e.g. a preview on claude.ai).
   // Only one picture plays at a time, and a picture won't replay until it has mostly left the screen.
   (function(){
     var mq=window.matchMedia;
     if(!(mq&&(mq('(hover: none)').matches||mq('(pointer: coarse)').matches))) return;
     if(!('IntersectionObserver' in window)) return;
-    var DWELL=1000, MIN_RATIO=0.7, timer=null, lastPanel=null, lastLeft=true, started=false;
+    var DWELL=500, MIN_RATIO=0.7, timer=null, lastPanel=null, lastLeft=true, started=false;
     var panels=[].slice.call(document.querySelectorAll('.has-reveal'));
     var ratio=new Map();
     function moved(){

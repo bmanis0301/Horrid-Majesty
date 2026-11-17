@@ -593,7 +593,7 @@
   // once that panel's reveal images have loaded. A flash that's already running isn't restarted,
   // and a new one waits 1/3s after the last finished, so it can't strobe faster than
   // the 3-flashes-a-second photosensitivity limit.
-  // On phones it also plays when scrolling stops on a picture (see below).
+  // On phones it also flashes as each picture passes the middle of the screen (see below).
   // The decayed image then stays until the mouse moves, the wheel turns, the page scrolls,
   // or (on touch screens) the next tap. Tapping a picture never follows a link: only the text links do.
   var reducedMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -630,44 +630,65 @@
     panel._reveal={play:play,releaseHard:releaseHard,isActive:function(){return playing;}};
   });
 
-  // Phones and tablets: when scrolling stops and a picture fills most of the screen for half a
-  // second (DWELL), it plays and holds until the next scroll or tap. Uses IntersectionObserver so it also
-  // works when the page is shown inside a frame that scrolls its parent (e.g. a preview on claude.ai).
-  // Only one picture plays at a time, and a picture won't replay until it has mostly left the screen.
+  // Phones and tablets: each picture flashes (negative, then decayed, then straight back) as it
+  // passes the middle of the screen while scrolling. Tapping a picture still plays and holds it.
+  // Where the screen is, is tracked with thin invisible marker strips down the page, watched by an
+  // IntersectionObserver, so this also works when the page is shown inside a frame that scrolls its
+  // parent (e.g. a preview on claude.ai) and never sees a scroll event of its own.
+  // Safety: one flash at a time (pictures in the same row flash together), at least ~0.7s apart.
   (function(){
     var mq=window.matchMedia;
     if(!(mq&&(mq('(hover: none)').matches||mq('(pointer: coarse)').matches))) return;
     if(!('IntersectionObserver' in window)) return;
-    var DWELL=250, MIN_RATIO=0.7, timer=null, lastPanel=null, lastLeft=true, started=false;
+    var STEP=16, MIN_GAP=700, lastStart=-Infinity, prevMid=null;
     var panels=[].slice.call(document.querySelectorAll('.has-reveal'));
-    var ratio=new Map();
-    function moved(){
-      panels.forEach(function(el){ el._reveal.releaseHard(); });
-      clearTimeout(timer); timer=setTimeout(settle,DWELL);
+    var track=document.createElement('div');
+    track.setAttribute('aria-hidden','true');
+    track.style.cssText='position:absolute;left:0;top:0;width:1px;pointer-events:none;visibility:hidden';
+    document.body.style.position='relative';
+    document.body.appendChild(track);
+    var vis=[], io=null;
+    function build(){
+      if(io) io.disconnect();
+      track.innerHTML=''; vis=[];
+      var h=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight);
+      track.style.height=h+'px';
+      io=new IntersectionObserver(onChange,{threshold:0});
+      for(var y=0;y<h;y+=STEP){
+        var m=document.createElement('i');
+        m.style.cssText='position:absolute;left:0;width:1px;height:1px;top:'+y+'px';
+        m._i=vis.length; vis.push(false); track.appendChild(m); io.observe(m);
+      }
     }
-    function settle(){
-      timer=null;
-      if(panels.some(function(el){return el._reveal.isActive();})) return;
-      var best=null, bestR=0, bestLeft=0;
-      panels.forEach(function(el){
-        var r=ratio.get(el)||0;
-        if(r<MIN_RATIO) return;
-        if(el===lastPanel&&!lastLeft) return;
-        var left=el.getBoundingClientRect().left;
-        if(!best||r>bestR+0.02||(Math.abs(r-bestR)<=0.02&&left<bestLeft)){best=el;bestR=r;bestLeft=left;}
-      });
-      if(best&&best._reveal.play(true)){ lastPanel=best; lastLeft=false; }
+    function docTop(el){ return el.getBoundingClientRect().top+(window.scrollY||0); }
+    function onChange(entries){
+      entries.forEach(function(e){ vis[e.target._i]=e.isIntersecting; });
+      var first=vis.indexOf(true), last=vis.lastIndexOf(true);
+      if(first<0) return;
+      var mid=(first*STEP+last*STEP)/2;
+      // movement: let go of any picture a tap is holding
+      if(prevMid!==null&&Math.abs(mid-prevMid)>2) panels.forEach(function(el){ el._reveal.releaseHard(); });
+      if(prevMid!==null&&!reducedMotion){
+        var lo=Math.min(prevMid,mid), hi=Math.max(prevMid,mid);
+        for(var k=0;k<panels.length;k++){
+          var el=panels[k], top=docTop(el), c=top+el.offsetHeight/2;
+          if(c>=lo&&c<=hi&&hi>lo){
+            if(performance.now()-lastStart<MIN_GAP) break;
+            if(panels.some(function(o){return o._reveal.isActive();})) break;
+            if(el._reveal.play(false)){
+              lastStart=performance.now();
+              // pictures side by side in the same row (the two-column product grid) flash together
+              panels.forEach(function(o){ if(o!==el&&Math.abs(docTop(o)+o.offsetHeight/2-c)<30) o._reveal.play(false); });
+              break;
+            }
+          }
+        }
+      }
+      prevMid=mid;
     }
-    var th=[]; for(var k=0;k<=20;k++) th.push(k/20);
-    var io=new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        ratio.set(e.target,e.intersectionRatio);
-        if(e.target===lastPanel&&e.intersectionRatio<0.3) lastLeft=true;
-      });
-      if(started) moved(); else started=true;   // the first report is the page loading, not a scroll
-    },{threshold:th});
-    panels.forEach(function(el){ io.observe(el); });
-    window.addEventListener('scroll',moved,{passive:true});
+    build();
+    window.addEventListener('load',build);
+    var rt; window.addEventListener('resize',function(){ clearTimeout(rt); rt=setTimeout(build,200); });
   })();
 
   // Header logo: rests for 30 seconds after the page opens, then bleeds (the M stains, the H

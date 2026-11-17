@@ -201,6 +201,9 @@
   .site-footer ul{list-style:none;margin:0;padding:0;font-size:max(14px, calc(20 * var(--u)));line-height:1.5}
   .site-footer ul a:hover,.site-footer ul a:focus-visible{text-decoration:underline;text-underline-offset:.2em}
   .footer-logo{width:calc(350 * var(--u));height:calc(100 * var(--u));object-fit:cover}
+  .footer-lockup{position:relative;display:inline-block;line-height:0}
+  /* animated mark sits exactly where the mark is in the Figma lockup (14,8 / 58.5x84 of 350x100) */
+  .footer-mark{position:absolute;left:4%;top:8%;width:16.714%;height:84%;overflow:visible}
 
   /* ---------- Concierge (floats over the page) ---------- */
   .concierge{
@@ -238,7 +241,7 @@
     .nav ul{display:none}
     .logo-tab{width:150px;height:80px;margin-top:14px}
     .logo-tab .mark{left:56px;top:-4px;width:38px;height:54px}
-    .logo-tab .wordmark{left:12px;top:56px;width:126px;height:10px}
+    .logo-tab .wordmark{left:12px;top:60px;width:126px;height:10px}
     .icons{right:24px;gap:12px}
     .icons a{width:22px;height:22px}
     .menu-toggle{
@@ -578,7 +581,50 @@
       <ul><li><a href="#">Tailoring</a></li><li><a href="#">Personal shopping</a></li><li><a href="#">Delivery</a></li><li><a href="#">Contracts</a></li></ul>
     </div>
     <div class="footer-brand">
-      <img class="footer-logo" src="assets/footer-logo.png" alt="Horrid Majesty">
+      <span class="footer-lockup">
+        <img class="footer-logo" src="assets/footer-wordmark.png" alt="Horrid Majesty">
+        <svg class="footer-mark" id="footer-bleed" xmlns="http://www.w3.org/2000/svg" viewBox="70 34 260 372" preserveAspectRatio="none" overflow="visible" aria-hidden="true" focusable="false">
+        <defs>
+        <mask id="hf-weave" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="440"><rect width="400" height="440" fill="#fff"/><rect x="0" y="223" width="400" height="20" fill="#000"/></mask>
+        <clipPath id="hf-stain"><rect x="0" y="102.0" width="400" height="0"><animate attributeName="height" values="0;222.0" begin="0.6s" dur="1.0s" keyTimes="0;1" calcMode="spline" keySplines="0.45 0 0.25 1" fill="freeze"/></rect></clipPath>
+        </defs>
+        <g id="hf-blood" fill="#C2181F">
+        <ellipse cx="154.0" cy="401" rx="0" ry="0"><animate attributeName="rx" values="0;9;22" begin="3.386s" dur="24s" keyTimes="0;0.15;1" fill="freeze"/><animate attributeName="ry" values="0;2.6;3.5" begin="3.386s" dur="24s" keyTimes="0;0.15;1" fill="freeze"/></ellipse>
+        <ellipse cx="246.0" cy="401" rx="0" ry="0"><animate attributeName="rx" values="0;9;19" begin="4.49s" dur="24s" keyTimes="0;0.15;1" fill="freeze"/><animate attributeName="ry" values="0;2.6;3.5" begin="4.49s" dur="24s" keyTimes="0;0.15;1" fill="freeze"/></ellipse>
+        <ellipse cx="200" cy="238.016" rx="0" ry="0"><animate attributeName="cy" values="238.02;242.48;399;399" begin="1.8s" dur="2.8s" keyTimes="0;0.72;0.88;1" calcMode="spline" keySplines="0.45 0 0.25 1;0.55 0 0.9 0.4;0 0 1 1" repeatCount="indefinite"/><animate attributeName="rx" values="0;4.71;3.87;0" begin="1.8s" dur="2.8s" keyTimes="0;0.72;0.88;1" calcMode="spline" keySplines="0.45 0 0.25 1;0 0 1 1;0 0 1 1" repeatCount="indefinite"/><animate attributeName="ry" values="0;5.21;5.95;0" begin="1.8s" dur="2.8s" keyTimes="0;0.72;0.88;1" calcMode="spline" keySplines="0.45 0 0.25 1;0 0 1 1;0 0 1 1" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;1;0" begin="1.8s" dur="2.8s" keyTimes="0;0.72;0.88;1" repeatCount="indefinite"/></ellipse>
+        <ellipse cx="200" cy="401" rx="0" ry="0"><animate attributeName="rx" values="0;9;26" begin="4.264s" dur="24s" keyTimes="0;0.15;1" fill="freeze"/><animate attributeName="ry" values="0;2.6;3.5" begin="4.264s" dur="24s" keyTimes="0;0.15;1" fill="freeze"/></ellipse>
+        <ellipse cx="86" cy="398.2666666666667" rx="0" ry="0"><animate attributeName="cy" values="398.27;403.67;452;452" begin="3.8s" dur="2.4s" keyTimes="0;0.72;0.9;1" calcMode="spline" keySplines="0.45 0 0.25 1;0.55 0 0.9 0.4;0 0 1 1" repeatCount="indefinite"/><animate attributeName="rx" values="0;5.7;4.68;0" begin="3.8s" dur="2.4s" keyTimes="0;0.72;0.9;1" calcMode="spline" keySplines="0.45 0 0.25 1;0 0 1 1;0 0 1 1" repeatCount="indefinite"/><animate attributeName="ry" values="0;6.3;7.2;0" begin="3.8s" dur="2.4s" keyTimes="0;0.72;0.9;1" calcMode="spline" keySplines="0.45 0 0.25 1;0 0 1 1;0 0 1 1" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;0;0" begin="3.8s" dur="2.4s" keyTimes="0;0.72;0.86;1" repeatCount="indefinite"/></ellipse>
+        <ellipse cx="315" cy="392.4" rx="0" ry="0"><animate attributeName="cy" values="392.4;398.25;452;452" begin="3.95s" dur="3.2s" keyTimes="0;0.72;0.9;1" calcMode="spline" keySplines="0.45 0 0.25 1;0.55 0 0.9 0.4;0 0 1 1" repeatCount="indefinite"/><animate attributeName="rx" values="0;6.17;5.07;0" begin="3.95s" dur="3.2s" keyTimes="0;0.72;0.9;1" calcMode="spline" keySplines="0.45 0 0.25 1;0 0 1 1;0 0 1 1" repeatCount="indefinite"/><animate attributeName="ry" values="0;6.83;7.8;0" begin="3.95s" dur="3.2s" keyTimes="0;0.72;0.9;1" calcMode="spline" keySplines="0.45 0 0.25 1;0 0 1 1;0 0 1 1" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;0;0" begin="3.95s" dur="3.2s" keyTimes="0;0.72;0.86;1" repeatCount="indefinite"/></ellipse>
+        </g>
+        <g id="hf-M" mask="url(#hf-weave)"><g fill="#E8E2D3"><path d="M146.00,110.67 L162.00,105.33 L162.00,316.67 L146.00,322.00 Z"/><path d="M238.00,109.33 L254.00,104.00 L254.00,316.67 L238.00,322.00 Z"/><path d="M146.00,110.67 L166.00,104.00 L207.69,230.00 L192.31,230.00 Z"/><path d="M234.00,110.67 L254.00,104.00 L207.69,230.00 L192.31,230.00 Z"/></g><g id="hf-M-stain" fill="#C2181F" clip-path="url(#hf-stain)"><path d="M146.00,110.67 L162.00,105.33 L162.00,316.67 L146.00,322.00 Z"/><path d="M238.00,109.33 L254.00,104.00 L254.00,316.67 L238.00,322.00 Z"/><path d="M146.00,110.67 L166.00,104.00 L207.69,230.00 L192.31,230.00 Z"/><path d="M234.00,110.67 L254.00,104.00 L207.69,230.00 L192.31,230.00 Z"/></g></g>
+        <g id="hf-leg-drops" fill="#C2181F">
+        <rect x="146" y="315.1666666666667" width="16" height="0"><animate attributeName="height" values="0;5.83;5.83;0;0" begin="1.4500000000000002s" dur="2.2s" keyTimes="0;0.55;0.72;0.76;1" calcMode="spline" keySplines="0.45 0 0.25 1;0 0 1 1;0.45 0 0.25 1;0 0 1 1" repeatCount="indefinite"/></rect>
+        <ellipse cx="154.0" cy="320" rx="0" ry="0"><animate attributeName="cy" values="320;321;322.5;399;399" begin="1.4500000000000002s" dur="2.2s" keyTimes="0;0.55;0.72;0.88;1" calcMode="spline" keySplines="0.45 0 0.25 1;0.45 0 0.25 1;0.55 0 0.9 0.4;0 0 1 1" repeatCount="indefinite"/><animate attributeName="rx" values="0;8.0;8.0;6.24;0" begin="1.4500000000000002s" dur="2.2s" keyTimes="0;0.55;0.72;0.88;1" calcMode="spline" keySplines="0.45 0 0.25 1;0 0 1 1;0 0 1 1;0 0 1 1" repeatCount="indefinite"/><animate attributeName="ry" values="0;8.4;8.96;9.6;0" begin="1.4500000000000002s" dur="2.2s" keyTimes="0;0.55;0.72;0.88;1" calcMode="spline" keySplines="0.45 0 0.25 1;0 0 1 1;0 0 1 1;0 0 1 1" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;1;1;0" begin="1.4500000000000002s" dur="2.2s" keyTimes="0;0.55;0.72;0.88;1" repeatCount="indefinite"/></ellipse>
+        <rect x="238" y="315.1666666666667" width="16" height="0"><animate attributeName="height" values="0;5.83;5.83;0;0" begin="1.85s" dur="3.0s" keyTimes="0;0.55;0.72;0.76;1" calcMode="spline" keySplines="0.45 0 0.25 1;0 0 1 1;0.45 0 0.25 1;0 0 1 1" repeatCount="indefinite"/></rect>
+        <ellipse cx="246.0" cy="320" rx="0" ry="0"><animate attributeName="cy" values="320;321;322.5;399;399" begin="1.85s" dur="3.0s" keyTimes="0;0.55;0.72;0.88;1" calcMode="spline" keySplines="0.45 0 0.25 1;0.45 0 0.25 1;0.55 0 0.9 0.4;0 0 1 1" repeatCount="indefinite"/><animate attributeName="rx" values="0;8.0;8.0;6.24;0" begin="1.85s" dur="3.0s" keyTimes="0;0.55;0.72;0.88;1" calcMode="spline" keySplines="0.45 0 0.25 1;0 0 1 1;0 0 1 1;0 0 1 1" repeatCount="indefinite"/><animate attributeName="ry" values="0;8.4;8.96;9.6;0" begin="1.85s" dur="3.0s" keyTimes="0;0.55;0.72;0.88;1" calcMode="spline" keySplines="0.45 0 0.25 1;0 0 1 1;0 0 1 1;0 0 1 1" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;1;1;0" begin="1.85s" dur="3.0s" keyTimes="0;0.55;0.72;0.88;1" repeatCount="indefinite"/></ellipse>
+        </g>
+        <g id="hf-H" fill="#E8E2D3"><path d="M70.00,50.00 L118.00,34.00 L118.00,390.00 L70.00,406.00 Z"/><path d="M282.00,50.00 L330.00,34.00 L330.00,390.00 L282.00,406.00 Z"/><path d="M117.00,226.00 L283.00,226.00 L283.00,240.00 L117.00,240.00 Z"/></g>
+        <defs><clipPath id="hf-stem0"><path d="M70.00,50.00 L118.00,34.00 L118.00,390.00 L70.00,406.00 Z"/></clipPath><clipPath id="hf-stem1"><path d="M282.00,50.00 L330.00,34.00 L330.00,390.00 L282.00,406.00 Z"/></clipPath></defs>
+        <g id="hf-H-blood" fill="#C2181F">
+        <g clip-path="url(#hf-stem0)"><path d="M70.00,49.00 L118.00,33.00 L118.00,43.00 L70.00,59.00 Z" opacity="0"><animate attributeName="opacity" values="0;1" begin="1.3s" dur="0.5s" fill="freeze"/></path>
+        <path d="M71.0,55.666666666666664 Q80.0,53.666666666666664 80.0,68.66666666666666 L92.0,68.66666666666666 Q92.0,51.666666666666664 101.0,45.666666666666664 Z" opacity="0"><animate attributeName="opacity" values="0;1" begin="1.5999999999999999s" dur="0.35s" fill="freeze"/></path>
+        <rect x="80.0" y="42.666666666666664" width="12" height="0" rx="6.0"><animate attributeName="height" values="0;126.0;360.0" begin="1.7s" dur="2.3s" keyTimes="0;0.3;1" calcMode="spline" keySplines="0.2 0.7 0.3 1;0.45 0 0.25 1" fill="freeze"/></rect>
+        <circle cx="86" cy="42.666666666666664" r="0"><animate attributeName="cy" values="42.67;168.67;402.67" begin="1.7s" dur="2.3s" keyTimes="0;0.3;1" calcMode="spline" keySplines="0.2 0.7 0.3 1;0.45 0 0.25 1" fill="freeze"/><animate attributeName="r" values="0;7.44;0" begin="1.7s" dur="2.3s" keyTimes="0;0.3;1" calcMode="spline" keySplines="0.2 0.7 0.3 1;0.45 0 0.25 1" fill="freeze"/></circle>
+        <path d="M97.25,46.916666666666664 Q102.5,47.0 102.5,62.0 L109.5,62.0 Q109.5,45.0 114.75,41.083333333333336 Z" opacity="0"><animate attributeName="opacity" values="0;1" begin="1.9s" dur="0.35s" fill="freeze"/></path>
+        <rect x="102.5" y="36.0" width="7" height="0" rx="3.5"><animate attributeName="height" values="0;69.3;198.0" begin="2.0s" dur="1.9s" keyTimes="0;0.3;1" calcMode="spline" keySplines="0.2 0.7 0.3 1;0.45 0 0.25 1" fill="freeze"/></rect>
+        <circle cx="106" cy="36.0" r="0"><animate attributeName="cy" values="36.0;105.3;234.0" begin="2.0s" dur="1.9s" keyTimes="0;0.3;1" calcMode="spline" keySplines="0.2 0.7 0.3 1;0.45 0 0.25 1" fill="freeze"/><animate attributeName="r" values="0;4.34;4.34" begin="2.0s" dur="1.9s" keyTimes="0;0.3;1" calcMode="spline" keySplines="0.2 0.7 0.3 1;0.45 0 0.25 1" fill="freeze"/></circle>
+        </g>
+        <g clip-path="url(#hf-stem1)"><path d="M282.00,49.00 L330.00,33.00 L330.00,43.00 L282.00,59.00 Z" opacity="0"><animate attributeName="opacity" values="0;1" begin="1.3s" dur="0.5s" fill="freeze"/></path>
+        <path d="M286.0,54.66666666666667 Q292.0,54.333333333333336 292.0,69.33333333333334 L300.0,69.33333333333334 Q300.0,52.333333333333336 306.0,48.0 Z" opacity="0"><animate attributeName="opacity" values="0;1" begin="1.75s" dur="0.35s" fill="freeze"/></path>
+        <rect x="292.0" y="43.333333333333336" width="8" height="0" rx="4.0"><animate attributeName="height" values="0;50.4;144.0" begin="1.85s" dur="1.7s" keyTimes="0;0.3;1" calcMode="spline" keySplines="0.2 0.7 0.3 1;0.45 0 0.25 1" fill="freeze"/></rect>
+        <circle cx="296" cy="43.333333333333336" r="0"><animate attributeName="cy" values="43.33;93.73;187.33" begin="1.85s" dur="1.7s" keyTimes="0;0.3;1" calcMode="spline" keySplines="0.2 0.7 0.3 1;0.45 0 0.25 1" fill="freeze"/><animate attributeName="r" values="0;4.96;4.96" begin="1.85s" dur="1.7s" keyTimes="0;0.3;1" calcMode="spline" keySplines="0.2 0.7 0.3 1;0.45 0 0.25 1" fill="freeze"/></circle>
+        <path d="M298.75,50.416666666666664 Q308.5,48.0 308.5,63.0 L321.5,63.0 Q321.5,46.0 331.25,39.583333333333336 Z" opacity="0"><animate attributeName="opacity" values="0;1" begin="1.45s" dur="0.35s" fill="freeze"/></path>
+        <rect x="308.5" y="37.0" width="13" height="0" rx="6.5"><animate attributeName="height" values="0;126.0;360.0" begin="1.55s" dur="2.6s" keyTimes="0;0.3;1" calcMode="spline" keySplines="0.2 0.7 0.3 1;0.45 0 0.25 1" fill="freeze"/></rect>
+        <circle cx="315" cy="37.0" r="0"><animate attributeName="cy" values="37.0;163.0;397.0" begin="1.55s" dur="2.6s" keyTimes="0;0.3;1" calcMode="spline" keySplines="0.2 0.7 0.3 1;0.45 0 0.25 1" fill="freeze"/><animate attributeName="r" values="0;8.06;0" begin="1.55s" dur="2.6s" keyTimes="0;0.3;1" calcMode="spline" keySplines="0.2 0.7 0.3 1;0.45 0 0.25 1" fill="freeze"/></circle>
+        </g>
+        </g>
+        </svg>
+      </span>
     </div>
   </div>
 </footer>
@@ -691,11 +737,11 @@
     var rt; window.addEventListener('resize',function(){ clearTimeout(rt); rt=setTimeout(build,200); });
   })();
 
-  // Header logo: rests for 30 seconds after the page opens, then bleeds (the M stains, the H
+  // Header logo: bleeds as soon as the page opens (WAIT, in ms, can delay it) (the M stains, the H
   // spills over and drips) and keeps dripping for the rest of the visit. With reduced motion
   // turned on, it switches straight to the finished bleeding state without animating.
   (function(){
-    var logo=document.getElementById('logo-bleed'), WAIT=30000;
+    var logo=document.getElementById('logo-bleed'), WAIT=0;
     if(!logo||!logo.pauseAnimations) return;
     try{ logo.pauseAnimations(); logo.setCurrentTime(0); }catch(e){ return; }
     setTimeout(function(){
@@ -704,6 +750,20 @@
         else { logo.setCurrentTime(0); logo.unpauseAnimations(); }
       }catch(e){}
     },WAIT);
+  })();
+
+  // Footer logo: same bleed, starting as soon as the page opens. It keeps dripping after that. Reduced motion: jumps to the finished state.
+  (function(){
+    var mark=document.getElementById('footer-bleed');
+    if(!mark||!mark.pauseAnimations) return;
+    try{ mark.pauseAnimations(); mark.setCurrentTime(0); }catch(e){ return; }
+    function start(){
+      try{
+        if(reducedMotion){ mark.setCurrentTime(16); }
+        else { mark.setCurrentTime(0); mark.unpauseAnimations(); }
+      }catch(e){}
+    }
+    start();
   })();
 
   (function(){

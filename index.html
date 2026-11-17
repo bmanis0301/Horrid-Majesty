@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Horrid Majesty</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Tokens (brand bible + Figma) ---------- */
+  :root{
+    --black:#000000;
+    --ink:#0B0B0E;
+    --bone:#E8E2D3;
+    --white:#FFFFFF;
+    --shade:rgba(11,11,14,.85);
+    /* 1 design px at the 1920px Figma frame, scaled down on smaller screens */
+    --u:min(1px, calc(100vw / 1920));
+    --pad:calc(80 * var(--u));
+    --gap:calc(13 * var(--u));
+    --section:calc(96 * var(--u));
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bone);
+    color:var(--black);
+    font-family:'Jost',system-ui,sans-serif;
+    font-weight:400;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{display:block}
+  a{color:inherit;text-decoration:none}
+  p{margin:0}
+  .wrap{max-width:1920px;margin:0 auto}
+
+  /* ---------- Header ---------- */
+  .site-header{
+    position:relative; z-index:20;
+    height:calc(80 * var(--u)); min-height:56px;
+    background:var(--bone);
+  }
+  .site-header .wrap{position:relative;height:100%}
+  .nav{
+    position:absolute; inset:0;
+    display:grid;
+    grid-template-columns:1fr calc(238 * var(--u)) 1fr;
+    grid-template-rows:100%;
+    align-items:center;
+  }
+  .nav ul{
+    list-style:none;margin:0;padding:0;
+    display:flex;gap:calc(45 * var(--u));
+    font-size:max(14px, calc(20 * var(--u)));
+    white-space:nowrap;
+  }
+  .nav .nav-left{grid-column:1;justify-content:flex-end;padding-right:calc(20 * var(--u))}
+  .nav .nav-right{grid-column:3;justify-content:flex-start;padding-left:calc(20 * var(--u))}
+  .nav ul a{background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;transition:background-size .3s}
+  .nav ul a:hover,.nav ul a:focus-visible{background-size:100% 1px}
+
+  /* Logo tab: bone panel that drops below the header into the hero */
+  .logo-tab{
+    position:relative; align-self:start; grid-column:2; grid-row:1;
+    margin-top:calc(30 * var(--u));
+    width:calc(238 * var(--u)); height:calc(100 * var(--u));
+    background:var(--bone);
+  }
+  .logo-tab .mark{
+    position:absolute; left:calc(88 * var(--u)); top:calc(-23 * var(--u));
+    width:calc(61 * var(--u)); height:calc(87 * var(--u)); object-fit:cover;
+  }
+  .logo-tab .wordmark{
+    position:absolute; left:calc(18 * var(--u)); top:calc(74 * var(--u));
+    width:calc(202 * var(--u)); height:calc(16 * var(--u)); object-fit:cover;
+  }
+  .icons{
+    position:absolute; right:calc(81 * var(--u)); top:50%; transform:translateY(-50%);
+    display:flex; gap:calc(12 * var(--u)); align-items:center;
+  }
+  .icons a{display:block;width:calc(24 * var(--u));height:calc(24 * var(--u));min-width:20px;min-height:20px}
+  .icons img{width:100%;height:100%}
+  .menu-toggle,.mobile-menu{display:none}
+
+  /* ---------- Shared image-panel pieces ---------- */
+  .panel{position:relative;overflow:hidden;color:var(--white)}
+  .panel > img.cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .shade{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(to bottom,rgba(0,0,0,0),var(--shade));pointer-events:none}
+  .panel-copy{position:absolute;left:0;right:0;text-align:center}
+  .display{
+    font-size:calc(50 * var(--u));
+    letter-spacing:.16em; line-height:normal; white-space:nowrap;
+  }
+  .cta{
+    display:inline-block;
+    font-size:max(13px, calc(20 * var(--u)));
+    letter-spacing:.03em; text-transform:uppercase;
+    text-decoration:underline; text-underline-offset:.2em; text-decoration-thickness:1px;
+    transition:opacity .2s;
+  }
+  .cta:hover,.cta:focus-visible{opacity:.75}
+
+  /* ---------- Hero ---------- */
+  .hero{height:calc(1013 * var(--u))}
+  .hero .shade{height:calc(278 * var(--u))}
+  .hero .panel-copy{top:calc(807 * var(--u))}
+  .hero .cta{margin-top:calc(7 * var(--u))}
+
+  /* ---------- Mephistopheles reveal (hover on hero, necklace banner, collection panels, every product card, all three services) ----------
+     Hard cuts only: negative for ~120ms, then the decayed image.
+     Mouse: the decay holds until the mouse moves again (after a ~220ms minimum),
+     then cuts straight back. Touch: the decay shows for ~220ms, then cuts back. */
+  .has-reveal .reveal{opacity:0;pointer-events:none}
+  .has-reveal.is-revealing .reveal-negative{animation:hm-negative 340ms linear forwards}
+  .has-reveal.is-revealing .reveal-decayed{animation:hm-decayed 340ms linear forwards}
+  @keyframes hm-negative{0%,34.9%{opacity:1} 35%,100%{opacity:0}}
+  @keyframes hm-decayed{0%,34.9%{opacity:0} 35%,99.9%{opacity:1} 100%{opacity:0}}
+  .has-reveal.is-revealing.is-holding .reveal-decayed{animation-name:hm-decayed-hold}
+  @keyframes hm-decayed-hold{0%,34.9%{opacity:0} 35%,100%{opacity:1}}
+
+  /* ---------- Section titles ---------- */
+  .section-title{
+    font-size:max(24px, calc(40 * var(--u)));
+    letter-spacing:.16em; font-weight:400; line-height:normal;
+    text-align:center; margin:0;
+    padding-top:var(--section);
+    padding-bottom:calc(35 * var(--u));
+  }
+
+  /* ---------- Product grids ---------- */
+  .products{
+    list-style:none;margin:0;
+    padding:0 var(--pad);
+    display:grid; grid-template-columns:repeat(4,1fr); gap:var(--gap);
+  }
+  .product a{display:block}
+  .product .frame{
+    position:relative; overflow:hidden;
+    aspect-ratio:430/658; background:var(--white);
+    border-bottom:1px solid var(--black);
+  }
+  .product .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+  .product a:hover .frame img{transform:scale(1.03)}
+  .product .name{font-size:max(15px, calc(18 * var(--u)));margin-top:calc(7 * var(--u))}
+  .product .desc{font-size:max(13px, calc(16 * var(--u)));max-width:calc(343 * var(--u));margin-top:calc(7 * var(--u));line-height:normal}
+  .product .price{font-size:max(13px, calc(16 * var(--u)));margin-top:calc(7 * var(--u))}
+  .products + .after{height:var(--section)}
+
+  /* ---------- Banner ---------- */
+  .banner{height:calc(1081 * var(--u))}
+  .banner .shade{height:calc(277 * var(--u))}
+  .banner .panel-copy{top:calc(868 * var(--u))}
+  .banner .cta{margin-top:calc(15 * var(--u))}
+
+  /* ---------- Collections ---------- */
+  .collections{
+    display:grid; grid-template-columns:954fr 953fr; gap:var(--gap);
+    margin-top:var(--section);
+  }
+  .collection{aspect-ratio:954/1080;background:var(--white)}
+  .collection img,.service img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+  .collection .shade{height:25.74%}
+  .collection .panel-copy{top:80.9%}
+  .collection .display{letter-spacing:.04em}
+  .collection .cta{margin-top:calc(7 * var(--u))}
+
+  /* ---------- Services ---------- */
+  .services{
+    list-style:none;margin:0;
+    padding:0 var(--pad);
+    display:grid; grid-template-columns:repeat(3,1fr); gap:calc(13.5 * var(--u));
+  }
+  .service{display:block;aspect-ratio:577.667/658}
+  .service:hover img{transform:scale(1.03)}
+  .service .shade{height:32.83%}
+  .service .panel-copy{top:85.87%}
+  .service .title{
+    font-size:max(18px, calc(28 * var(--u))); letter-spacing:.06em;
+    text-decoration:underline; text-underline-offset:.15em; text-decoration-thickness:1px;
+  }
+  .service .sub{font-size:max(13px, calc(18 * var(--u))); letter-spacing:.06em; margin-top:calc(3 * var(--u))}
+
+  /* ---------- Footer ---------- */
+  .site-footer{
+    margin-top:var(--section);
+    background:var(--ink); color:var(--white);
+    min-height:calc(277 * var(--u));
+  }
+  .site-footer .wrap{
+    display:grid;
+    grid-template-columns:calc(399 * var(--u)) calc(481 * var(--u)) calc(478 * var(--u)) 1fr;
+    padding:calc(64 * var(--u)) var(--pad) calc(64 * var(--u)) calc(81 * var(--u));
+  }
+  .site-footer h2{font-size:max(15px, calc(20 * var(--u)));font-weight:500;margin:0 0 calc(4 * var(--u))}
+  .site-footer ul{list-style:none;margin:0;padding:0;font-size:max(14px, calc(20 * var(--u)));line-height:1.5}
+  .site-footer ul a:hover,.site-footer ul a:focus-visible{text-decoration:underline;text-underline-offset:.2em}
+  .footer-logo{width:calc(350 * var(--u));height:calc(100 * var(--u));object-fit:cover}
+
+  /* ---------- Concierge (floats over the page) ---------- */
+  .concierge{
+    position:fixed; z-index:30;
+    right:calc(80 * var(--u)); bottom:calc(28 * var(--u));
+    width:calc(122 * var(--u)); height:calc(149 * var(--u));
+    min-width:76px; min-height:93px;
+    color:var(--white);
+    transition:transform .2s;
+  }
+  .concierge:hover,.concierge:focus-visible{transform:translateY(-3px)}
+  /* badge: arch-topped panel fading into blood red (Figma "Union"), portrait in a white ring */
+  .concierge::before{
+    content:""; position:absolute; inset:0;
+    border-radius:50% 50% 8.2% 8.2% / 40.9% 40.9% 8% 8%;
+    background:linear-gradient(to bottom, rgba(154,18,25,0), #9A1219);
+  }
+  .concierge img{
+    position:absolute; left:5.74%; top:4.03%; width:87.7%; aspect-ratio:1;
+    border-radius:50%; border:calc(5 * var(--u)) solid var(--white); border-width:max(3px, calc(5 * var(--u)));
+    object-fit:cover;
+  }
+  .concierge span{
+    position:absolute; left:0; right:0; top:73.8%; text-align:center;
+    font-weight:500; font-size:max(14px, calc(22 * var(--u))); letter-spacing:.03em; line-height:normal;
+  }
+
+  a:focus-visible,button:focus-visible{outline:1px solid currentColor;outline-offset:3px}
+
+  /* ---------- Tablet ---------- */
+  @media (max-width:1199px){
+    :root{--pad:24px;--gap:12px;--section:64px}
+    .site-header{height:64px}
+    .nav{grid-template-columns:1fr 150px 1fr}
+    .nav ul{display:none}
+    .logo-tab{width:150px;height:80px;margin-top:14px}
+    .logo-tab .mark{left:56px;top:-4px;width:38px;height:54px}
+    .logo-tab .wordmark{left:12px;top:56px;width:126px;height:10px}
+    .icons{right:24px;gap:12px}
+    .icons a{width:22px;height:22px}
+    .menu-toggle{
+      display:block; position:absolute; left:24px; top:50%; transform:translateY(-50%);
+      background:none;border:0;padding:0;cursor:pointer;
+      font:500 14px 'Jost',sans-serif; letter-spacing:.16em; text-transform:uppercase; color:var(--black);
+    }
+    .mobile-menu{
+      display:none; position:absolute; left:0; right:0; top:64px; z-index:19;
+      background:var(--bone); padding:56px 24px 28px;
+      border-bottom:1px solid rgba(0,0,0,.15);
+    }
+    .mobile-menu ul{list-style:none;margin:0;padding:0;display:grid;gap:16px;font-size:20px}
+    .site-header.open .mobile-menu{display:block}
+
+    .hero{height:min(78vh, 760px);min-height:520px}
+    .hero .shade{height:45%}
+    .hero .panel-copy{top:auto;bottom:56px;padding:0 24px}
+    .display{font-size:clamp(26px, 4.6vw, 44px);white-space:normal;letter-spacing:.12em}
+    .hero .cta,.banner .cta,.collection .cta{margin-top:14px}
+
+    .section-title{padding-top:64px;padding-bottom:28px}
+    .products{row-gap:40px}
+    .product .name{margin-top:8px}
+    .product .desc{max-width:none;margin-top:8px}
+    .product .price{margin-top:8px}
+
+    .banner{height:min(70vh, 680px);min-height:440px}
+    .banner .shade{height:45%}
+    .banner .panel-copy{top:auto;bottom:56px;padding:0 24px}
+
+    .collection .panel-copy{top:auto;bottom:8%}
+    .services{gap:12px}
+    .service .panel-copy{top:auto;bottom:6%;padding:0 12px}
+    .service .sub{margin-top:6px}
+
+    .site-footer .wrap{grid-template-columns:1fr 1fr 1fr;row-gap:40px;padding:48px 24px}
+    .site-footer h2{margin-bottom:6px}
+    .footer-brand{grid-column:1 / -1}
+    .footer-logo{width:245px;height:70px}
+
+    .concierge{right:16px;bottom:16px}
+  }
+
+  /* ---------- Phone ---------- */
+  @media (max-width:799px){
+    .products{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width:699px){
+    .collections{grid-template-columns:1fr;gap:12px}
+    .services{grid-template-columns:1fr}
+    .site-footer .wrap{grid-template-columns:1fr 1fr}
+    .products{gap:12px;row-gap:32px}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important}
+    /* no flash: skip the negative, ease the decay in and out */
+    .has-reveal.is-revealing .reveal-negative{animation:none}
+    .has-reveal.is-revealing .reveal-decayed{animation:hm-decayed-soft 2400ms ease-in-out forwards}
+    @keyframes hm-decayed-soft{0%{opacity:0} 30%,65%{opacity:1} 100%{opacity:0}}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header" id="top">
+  <div class="wrap">
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+    <nav class="nav" aria-label="Main">
+      <ul class="nav-left">
+        <li><a href="#new-arrivals">New In</a></li>
+        <li><a href="#collections">Collections</a></li>
+        <li><a href="#">Women</a></li>
+      </ul>
+      <a class="logo-tab" href="#top" aria-label="Horrid Majesty, home">
+        <img class="mark" src="assets/logo-mark.png" alt="">
+        <img class="wordmark" src="assets/logo-wordmark.png" alt="">
+      </a>
+      <ul class="nav-right">
+        <li><a href="#">Men</a></li>
+        <li><a href="#">Looks</a></li>
+        <li><a href="#jewelry">Accessories</a></li>
+      </ul>
+    </nav>
+    <div class="icons">
+      <a href="#" aria-label="Search"><img src="assets/icon-search.png" alt=""></a>
+      <a href="#" aria-label="Bag"><img src="assets/icon-bag.png" alt=""></a>
+      <a href="#" aria-label="Account"><img src="assets/icon-account.png" alt=""></a>
+    </div>
+    <div class="mobile-menu" id="mobile-menu">
+      <ul>
+        <li><a href="#new-arrivals">New In</a></li>
+        <li><a href="#collections">Collections</a></li>
+        <li><a href="#">Women</a></li>
+        <li><a href="#">Men</a></li>
+        <li><a href="#">Looks</a></li>
+        <li><a href="#jewelry">Accessories</a></li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="panel hero has-reveal" aria-label="Featured">
+    <img class="cover" src="assets/hero.jpg" alt="Five figures in Horrid Majesty clothing standing in a gothic cathedral hall hung with heraldic banners">
+    <!-- Mephistopheles reveal: hovering flashes the negative, then the decayed image, then back -->
+    <img class="cover reveal reveal-negative" src="assets/hero-negative.jpg" alt="" aria-hidden="true">
+    <img class="cover reveal reveal-decayed" src="assets/hero-decayed.jpg" alt="" aria-hidden="true">
+    <div class="shade"></div>
+    <div class="panel-copy">
+      <p class="display">become who you’ve always wanted to be</p>
+      <a class="cta" href="#new-arrivals">Discover the collection</a>
+    </div>
+  </section>
+
+  <section id="new-arrivals" aria-labelledby="na-title">
+    <h2 class="section-title" id="na-title">New arrivals</h2>
+    <ul class="products">
+      <li class="product"><a href="#">
+        <div class="frame has-reveal">
+          <img src="assets/na-jacket.jpg" alt="Black pinstripe jacket with gold piping and a standing collar">
+          <img class="reveal reveal-negative" src="assets/na-jacket-negative.jpg" alt="" aria-hidden="true">
+          <img class="reveal reveal-decayed" src="assets/na-jacket-decayed.jpg" alt="" aria-hidden="true">
+        </div>
+        <p class="name">Company Jacket</p>
+        <p class="desc">Black wool pinstripe, piped in gold, with a standing collar. Cut to hold you close.</p>
+        <p class="price">$4,850</p>
+      </a></li>
+      <li class="product"><a href="#">
+        <div class="frame has-reveal">
+          <img src="assets/na-loafer.jpg" alt="Ivory calfskin loafer with a gilded buckle and stacked heel">
+          <img class="reveal reveal-negative" src="assets/na-loafer-negative.jpg" alt="" aria-hidden="true">
+          <img class="reveal reveal-decayed" src="assets/na-loafer-decayed.jpg" alt="" aria-hidden="true">
+        </div>
+        <p class="name">Heir Loafer</p>
+        <p class="desc">Ivory calfskin, gilded buckle, stacked heel. Comfortable on any ground you inherit.</p>
+        <p class="price">$1,480</p>
+      </a></li>
+      <li class="product"><a href="#">
+        <div class="frame has-reveal">
+          <img src="assets/na-cape.jpg" alt="Crimson velvet cape lined with spotted ermine">
+          <img class="reveal reveal-negative" src="assets/na-cape-negative.jpg" alt="" aria-hidden="true">
+          <img class="reveal reveal-decayed" src="assets/na-cape-decayed.jpg" alt="" aria-hidden="true">
+        </div>
+        <p class="name">Sovereign Cape</p>
+        <p class="desc">Crimson silk velvet over hand-spotted ermine. For those who have never been told no.</p>
+        <p class="price">$18,900</p>
+      </a></li>
+      <li class="product"><a href="#">
+        <div class="frame has-reveal">
+          <img src="assets/na-cravat.jpg" alt="Sapphire satin cravat with lace and a jewelled pin">
+          <img class="reveal reveal-negative" src="assets/na-cravat-negative.jpg" alt="" aria-hidden="true">
+          <img class="reveal reveal-decayed" src="assets/na-cravat-decayed.jpg" alt="" aria-hidden="true">
+        </div>
+        <p class="name">Patron Cravat</p>
+        <p class="desc">Sapphire silk satin, Calais lace and a jewelled pin at the throat. Wear it snug.</p>
+        <p class="price">$780</p>
+      </a></li>
+    </ul>
+    <div class="after"></div>
+  </section>
+
+  <section class="panel banner has-reveal" aria-label="Jewelry feature">
+    <img class="cover" src="assets/necklace-banner.jpg" alt="A molten gold collar set with rubies and diamonds resting on a woman’s throat">
+    <img class="cover reveal reveal-negative" src="assets/necklace-negative.jpg" alt="" aria-hidden="true">
+    <img class="cover reveal reveal-decayed" src="assets/necklace-decayed.jpg" alt="" aria-hidden="true">
+    <div class="shade"></div>
+    <div class="panel-copy">
+      <p class="display">decadence for its own sake</p>
+      <a class="cta" href="#jewelry">Shop now</a>
+    </div>
+  </section>
+
+  <section id="jewelry" aria-labelledby="jw-title">
+    <h2 class="section-title" id="jw-title">Jewelry</h2>
+    <ul class="products">
+      <li class="product"><a href="#">
+        <div class="frame has-reveal">
+          <img src="assets/jw-collar.jpg" alt="Gold collar necklace set with rubies and diamonds">
+          <img class="reveal reveal-negative" src="assets/jw-collar-negative.jpg" alt="" aria-hidden="true">
+          <img class="reveal reveal-decayed" src="assets/jw-collar-decayed.jpg" alt="" aria-hidden="true">
+        </div>
+        <p class="name">Tribute Collar</p>
+        <p class="desc">Molten 18k gold set with pigeon’s blood rubies and diamonds. It rests at the throat and stays.</p>
+        <p class="price">$68,500</p>
+      </a></li>
+      <li class="product"><a href="#">
+        <div class="frame has-reveal">
+          <img src="assets/jw-cufflinks.jpg" alt="Ruby cufflinks framed in diamonds and gold">
+          <img class="reveal reveal-negative" src="assets/jw-cufflinks-negative.jpg" alt="" aria-hidden="true">
+          <img class="reveal reveal-decayed" src="assets/jw-cufflinks-decayed.jpg" alt="" aria-hidden="true">
+        </div>
+        <p class="name">Ledger Cufflinks</p>
+        <p class="desc">Cushion-cut rubies framed in diamonds and 18k gold. Made for signing.</p>
+        <p class="price">$7,400</p>
+      </a></li>
+      <li class="product"><a href="#">
+        <div class="frame has-reveal">
+          <img src="assets/jw-cuff.jpg" alt="Pierced gold cuff set with rubies and diamonds">
+          <img class="reveal reveal-negative" src="assets/jw-cuff-negative.jpg" alt="" aria-hidden="true">
+          <img class="reveal reveal-decayed" src="assets/jw-cuff-decayed.jpg" alt="" aria-hidden="true">
+        </div>
+        <p class="name">Covenant Cuff</p>
+        <p class="desc">Pierced 18k gold set with rubies and diamonds. Once it’s on, it rarely comes off.</p>
+        <p class="price">$11,800</p>
+      </a></li>
+      <li class="product"><a href="#">
+        <div class="frame has-reveal">
+          <img src="assets/jw-earrings.jpg" alt="Gold drop earring with three rubies">
+          <img class="reveal reveal-negative" src="assets/jw-earrings-negative.jpg" alt="" aria-hidden="true">
+          <img class="reveal reveal-decayed" src="assets/jw-earrings-decayed.jpg" alt="" aria-hidden="true">
+        </div>
+        <p class="name">Reliquary Drops Earrings</p>
+        <p class="desc">Three rubies descend through pierced 18k gold. Sold as a pair.</p>
+        <p class="price">$9,600</p>
+      </a></li>
+    </ul>
+  </section>
+
+  <section class="collections" id="collections" aria-label="Collections">
+    <a class="panel collection has-reveal" href="#">
+      <img src="assets/fw26.jpg" alt="A pale-haired man in a crimson ermine cape and ivory coat before a snowbound gothic palace">
+      <img class="reveal reveal-negative" src="assets/fw26-negative.jpg" alt="" aria-hidden="true">
+      <img class="reveal reveal-decayed" src="assets/fw26-decayed.jpg" alt="" aria-hidden="true">
+      <div class="shade"></div>
+      <div class="panel-copy">
+        <p class="display">fall/winter 26</p>
+        <span class="cta">Shop now</span>
+      </div>
+    </a>
+    <a class="panel collection has-reveal" href="#">
+      <img src="assets/ss27.jpg" alt="A woman in an embroidered cobalt gown on a stone balustrade at sunset">
+      <img class="reveal reveal-negative" src="assets/ss27-negative.jpg" alt="" aria-hidden="true">
+      <img class="reveal reveal-decayed" src="assets/ss27-decayed.jpg" alt="" aria-hidden="true">
+      <div class="shade"></div>
+      <div class="panel-copy">
+        <p class="display">spring/summer 27</p>
+        <span class="cta">Shop now</span>
+      </div>
+    </a>
+  </section>
+
+  <section id="services" aria-labelledby="svc-title">
+    <h2 class="section-title" id="svc-title">Exclusive services</h2>
+    <ul class="services">
+      <li><a class="panel service has-reveal" href="#">
+        <img src="assets/svc-store.jpg" alt="An opulent boutique salon with gilded mirrors and a chandelier">
+        <img class="reveal reveal-negative" src="assets/svc-store-negative.jpg" alt="" aria-hidden="true">
+        <img class="reveal reveal-decayed" src="assets/svc-store-decayed.jpg" alt="" aria-hidden="true">
+        <div class="shade"></div>
+        <div class="panel-copy">
+          <p class="title">Store locator</p>
+          <p class="sub">come find us, we’ve already found you</p>
+        </div>
+      </a></li>
+      <li><a class="panel service has-reveal" href="#">
+        <img src="assets/svc-tailoring.jpg" alt="A tailor fitting an embroidered navy gown in an atelier">
+        <img class="reveal reveal-negative" src="assets/svc-tailoring-negative.jpg" alt="" aria-hidden="true">
+        <img class="reveal reveal-decayed" src="assets/svc-tailoring-decayed.jpg" alt="" aria-hidden="true">
+        <div class="shade"></div>
+        <div class="panel-copy">
+          <p class="title">Tailoring</p>
+          <p class="sub">it’ll fit you better than your own skin</p>
+        </div>
+      </a></li>
+      <li><a class="panel service has-reveal" href="#">
+        <img src="assets/svc-appointment.jpg" alt="A tailor with a notebook beside a client in a crimson and gold gown in a fitting salon">
+        <img class="reveal reveal-negative" src="assets/svc-appointment-negative.jpg" alt="" aria-hidden="true">
+        <img class="reveal reveal-decayed" src="assets/svc-appointment-decayed.jpg" alt="" aria-hidden="true">
+        <div class="shade"></div>
+        <div class="panel-copy">
+          <p class="title">Request an appointment</p>
+          <p class="sub">while you still can</p>
+        </div>
+      </a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <h2>House of Horrid Majesty</h2>
+      <ul><li><a href="#">The brand</a></li><li><a href="#">Our story</a></li><li><a href="#">Work with us</a></li></ul>
+    </div>
+    <div>
+      <h2>Our policies</h2>
+      <ul><li><a href="#">Purchases &amp; Returns</a></li><li><a href="#">FAQs</a></li><li><a href="#">Legal</a></li></ul>
+    </div>
+    <div>
+      <h2>Services</h2>
+      <ul><li><a href="#">Tailoring</a></li><li><a href="#">Personal shopping</a></li><li><a href="#">Delivery</a></li><li><a href="#">Contracts</a></li></ul>
+    </div>
+    <div class="footer-brand">
+      <img class="footer-logo" src="assets/footer-logo.png" alt="Horrid Majesty">
+    </div>
+  </div>
+</footer>
+
+<a class="concierge" href="#" aria-label="Concierge">
+  <img src="assets/concierge-portrait.jpg" alt="">
+  <span>Concierge</span>
+</a>
+
+<script>
+  // Reveal: plays every time the pointer enters a .has-reveal panel (tap on touch screens),
+  // once that panel's reveal images have loaded. A flash that's already running isn't restarted,
+  // and a new one waits 1/3s after the last finished, so it can't strobe faster than
+  // the 3-flashes-a-second photosensitivity limit.
+  // With a mouse, the decayed image stays until the mouse moves (or the wheel turns) again.
+  var reducedMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.has-reveal').forEach(function(panel){
+    var layers=panel.querySelectorAll('.reveal');
+    var decayed=panel.querySelector('.reveal-decayed');
+    var GAP=333, lastEnd=-Infinity, playing=false, holding=false, armed=false;
+    function ready(){return Array.prototype.every.call(layers,function(i){return i.complete&&i.naturalWidth>0;});}
+    function play(hold){
+      if(playing||performance.now()-lastEnd<GAP||!ready()) return;
+      playing=true; holding=hold&&!reducedMotion; armed=false;
+      panel.classList.remove('is-revealing','is-holding'); void panel.offsetWidth;
+      panel.classList.add('is-revealing'); if(holding) panel.classList.add('is-holding');
+    }
+    function finish(){
+      panel.classList.remove('is-revealing','is-holding');
+      playing=holding=armed=false; lastEnd=performance.now();
+    }
+    decayed.addEventListener('animationend',function(){ if(holding) armed=true; else finish(); });
+    function release(){ if(armed) finish(); }
+    document.addEventListener('mousemove',release,{passive:true});
+    document.addEventListener('wheel',release,{passive:true});
+    panel.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse'||e.pointerType==='pen')play(true);});
+    panel.addEventListener('click',function(e){if(!e.target.closest('a'))play(false);});
+  });
+
+  (function(){
+    var header=document.querySelector('.site-header');
+    var btn=document.querySelector('.menu-toggle');
+    btn.addEventListener('click',function(){
+      var open=header.classList.toggle('open');
+      btn.setAttribute('aria-expanded',open);
+      btn.textContent=open?'Close':'Menu';
+    });
+    document.querySelectorAll('.mobile-menu a').forEach(function(a){
+      a.addEventListener('click',function(){header.classList.remove('open');btn.setAttribute('aria-expanded','false');btn.textContent='Menu';});
+    });
+  })();
+</script>
+</body>
+</html>
